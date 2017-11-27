@@ -82,7 +82,14 @@ namespace ReferencePatcherTests {
   <Reference Name=""DevExpress.Data.v{version}"">{dxvcsroot}\20{version}\Win\DevExpress.Data\DevExpress.Data.csproj</Reference>
   <Reference Name=""DevExpress.Web.ASPxScheduler.v{version}"">{dxhgroot}\20{version}\ASP\DevExpress.Web.ASPxScheduler\DevExpress.Web.ASPxScheduler\DevExpress.Web.ASPxScheduler.csproj</Reference>
 </ArrayOfReference>";
-            Assert.AreEqual(expectedResult, result);
+            string expectedAlternateResult =
+    @"<?xml version=""1.0""?>
+<ArrayOfReference xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+  <Reference Name=""DevExpress.Data.v{version}"">{dxvcsroot}\20{version}\Win\DevExpress.Data\DevExpress.Data.csproj</Reference>
+  <Reference Name=""DevExpress.Web.ASPxScheduler.v{version}"">{dxhgroot}\20{version}\ASP\DevExpress.Web.ASPxScheduler\DevExpress.Web.ASPxScheduler\DevExpress.Web.ASPxScheduler.csproj</Reference>
+</ArrayOfReference>";
+            bool isGood = (result == expectedResult) || (result == expectedAlternateResult);
+            Assert.IsTrue(isGood);
         }
 
         [Test]
@@ -102,7 +109,13 @@ namespace ReferencePatcherTests {
 <ArrayOfVariable xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <Variable Name=""dxvcsroot"">d:\work\source</Variable>
 </ArrayOfVariable>";
-            Assert.AreEqual(expectedResult, result);
+            string expectedAlternateResult =
+@"<?xml version=""1.0""?>
+<ArrayOfVariable xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <Variable Name=""dxvcsroot"">d:\work\source</Variable>
+</ArrayOfVariable>";
+            bool isGood = (result == expectedResult) || (result == expectedAlternateResult);
+            Assert.IsTrue(isGood);
         }
     }
 }
