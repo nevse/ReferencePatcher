@@ -111,7 +111,7 @@ namespace ReferencePatcherTests {
 </ArrayOfVariable>";
             string expectedAlternateResult =
 @"<?xml version=""1.0""?>
-<ArrayOfVariable xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+<ArrayOfVariable xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
   <Variable Name=""dxvcsroot"">d:\work\source</Variable>
 </ArrayOfVariable>";
             bool isGood = (result == expectedResult) || (result == expectedAlternateResult);
