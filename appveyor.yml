@@ -4,13 +4,17 @@ before_build:
 configuration:
   - Debug
   - Release
+artifacts:
+  - path: ReferencePatcher/bin/Release/ReferencePatcher.vsix
+    name: ReferencePatcher
+
 deploy:
   release: ReferencePatcher-v$(appveyor_build_version)
   description: 'Release description'
   provider: GitHub
   auth_token:
     secure: tUj4kkwdAoUW02afvChhaNIKQO8S4dgUat24w/9J/bq2Lp35GObwxlg0mYALdP/g # your encrypted token from GitHub
-  artifact: ReferencePatcher/bin/Release/ReferencePatcher.vsix
+  artifact: ReferencePatcher
   draft: false
   prerelease: false
   force_update: true
