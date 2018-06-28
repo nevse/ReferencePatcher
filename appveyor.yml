@@ -1,6 +1,7 @@
 image: Visual Studio 2017
 before_build:
   - nuget restore
+  - ps: Add-Content GitVersion.yml "assembly-informational-format: '{Major}.{Minor}.{Patch}.$env:appveyor_build_version'"
 configuration:
   - Debug
   - Release

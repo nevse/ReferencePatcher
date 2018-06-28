@@ -53,7 +53,7 @@ namespace ReferencePatcher.Settings.Internal {
             XmlSerializer serializer = new XmlSerializer(typeof(List<T>));
             FileInfo fileInfo = new FileInfo(Path.Combine(GetOptionsDirPath(), fileName));
             EnsureFileInfoExist(fileInfo);
-            using (Stream stream = fileInfo.OpenWrite())
+            using (Stream stream = fileInfo.Create())
                 serializer.Serialize(stream, list);
         }
         
