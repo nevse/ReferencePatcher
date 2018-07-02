@@ -1,0 +1,1 @@
+VSIX v2 https://docs.microsoft.com/en-us/visualstudio/extensibility/how-to-migrate-extensibility-projects-to-visual-studio-2017

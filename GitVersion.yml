@@ -1,4 +1,5 @@
 branches: {}
 ignore:
   sha: []
+assembly-informational-format: '{Major}.{Minor}.{Patch}.0'
 
