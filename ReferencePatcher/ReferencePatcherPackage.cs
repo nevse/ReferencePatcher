@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Task = System.Threading.Tasks.Task;
 using ReferencePatcher;
+//using System.Threading;
+//using System.Threading.Tasks;
 
 namespace ReferencePatcher {
     static class GuidList {
@@ -22,24 +26,27 @@ namespace ReferencePatcher {
     /// </summary>
     // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
     // a package.
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     // This attribute is used to register the informations needed to show the this package
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionOpening_string)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
     [Guid(GuidList.guidVSReferencePatcherPkgString)]
-    public sealed class VSPackage1Package : Package {
+    public sealed class VSPackage1Package : AsyncPackage {
 
         public VSPackage1Package() {
         }
 
-        protected override void Initialize() {
-            base.Initialize();
+        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress) {
+            await Task.Delay(5000);
 
-            ReferencePatcher.SwitchProjectReferenceCommand.Initialize(this);
-        }
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            // Synchronously requesting a service on the UI thread
+            var dte = await GetServiceAsync(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+            await SwitchProjectReferenceCommand.InitializeAsync(this, dte);
+        }       
 
     }
 }

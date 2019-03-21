@@ -9,81 +9,25 @@ using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using ReferencePatcher.Services.Settings;
 using ReferencePatcher.Settings.Internal;
+using Task = System.Threading.Tasks.Task;
 
 namespace ReferencePatcher {
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class SwitchProjectReferenceCommand {
-        /// <summary>
-        /// Command ID.
-        /// </summary>
+    internal sealed class SwitchProjectReferenceCommand {        
         public const int CommandId = 0x0100;
-
-        /// <summary>
-        /// Command menu group (command set GUID).
-        /// </summary>
         public static readonly Guid CommandSet = new Guid("da8f9a8e-7113-4ae2-afde-1fa4c9851c33");
 
-        /// <summary>
-        /// VS Package that provides this command, not null.
-        /// </summary>
-        private readonly Package package;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SwitchProjectReferenceCommand"/> class.
-        /// Adds our command handlers for menu (commands must exist in the command table file)
-        /// </summary>
-        /// <param name="package">Owner package, not null.</param>
-        private SwitchProjectReferenceCommand(Package package) {
-            if (package == null) {
-                throw new ArgumentNullException("package");
-            }
-
-            this.package = package;
-
-            OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (commandService != null) {
-                var menuCommandID = new CommandID(CommandSet, CommandId);
-                var menuItem = new MenuCommand(this.MenuItemCallback, menuCommandID);
-                commandService.AddCommand(menuItem);
-            }
+        public static async Task InitializeAsync(AsyncPackage package, EnvDTE.DTE dte) {
+            var commandService = (IMenuCommandService)await package.GetServiceAsync(typeof(IMenuCommandService));
+            var cmdId = new CommandID(CommandSet, CommandId);
+            var cmd = new MenuCommand((s, e) => Execute(package, dte), cmdId);
+            commandService.AddCommand(cmd);
         }
 
-        /// <summary>
-        /// Gets the instance of the command.
-        /// </summary>
-        public static SwitchProjectReferenceCommand Instance {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the service provider from the owner package.
-        /// </summary>
-        private IServiceProvider ServiceProvider {
-            get {
-                return this.package;
-            }
-        }
-
-        /// <summary>
-        /// Initializes the singleton instance of the command.
-        /// </summary>
-        /// <param name="package">Owner package, not null.</param>
-        public static void Initialize(Package package) {
-            Instance = new SwitchProjectReferenceCommand(package);
-        }
-
-        /// <summary>
-        /// This function is the callback used to execute the command when the menu item is clicked.
-        /// See the constructor to see how the menu item is associated with this function using
-        /// OleMenuCommandService service and MenuCommand class.
-        /// </summary>
-        /// <param name="sender">Event sender.</param>
-        /// <param name="e">Event args.</param>
-        private void MenuItemCallback(object sender, EventArgs e) {
-            DTE2 envDTE = ServiceProvider.GetService(typeof(EnvDTE.DTE)) as EnvDTE80.DTE2;
+        static void Execute(Package package, EnvDTE.DTE dte) {
+            DTE2 envDTE = dte as EnvDTE80.DTE2;
             SelectedItems selectedItems = envDTE.SelectedItems;
 
             System.Array solutionProjects = envDTE.ActiveSolutionProjects as System.Array;
@@ -134,8 +78,8 @@ namespace ReferencePatcher {
                 project.References.AddProject(newProject);
             }
         }
-
-        Project FindProject(DTE2 envDte, string path, VSLangProj.Reference reference) {
+        
+        static Project FindProject(DTE2 envDte, string path, VSLangProj.Reference reference) {
             foreach (Project item in envDte.Solution.Projects) {
                 string assemblyName = item.GetAssemblyName();
                 if (Path.GetFileNameWithoutExtension(reference.Path).Equals(assemblyName))
@@ -144,7 +88,7 @@ namespace ReferencePatcher {
             return null;
         }
 
-        string ShowAddReferenceDialog(string name) {
+        static string ShowAddReferenceDialog(string name) {
             AddProjectPathWindow window = new AddProjectPathWindow();
             AddProjectViewModel viewModel = new AddProjectViewModel();
 
