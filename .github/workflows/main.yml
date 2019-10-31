@@ -13,5 +13,7 @@ jobs:
       run: echo Hello, world!
     - name: Setup MSBuild.exe
       uses: warrenbuckley/Setup-MSBuild@v1
+    - name: Restore Package References
+      run: msbuild /t:Restore ReferencePatcher.sln
     - name: MSBuild
       run: msbuild ReferencePatcher.sln
