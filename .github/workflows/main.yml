@@ -16,4 +16,4 @@ jobs:
     - name: Restore Package References
       run: msbuild /t:Restore ReferencePatcher.sln
     - name: MSBuild
-      run: msbuild ReferencePatcher.sln
+      run: msbuild /p:DeployExtension=false ReferencePatcher.sln
